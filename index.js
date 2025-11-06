@@ -19,6 +19,12 @@ app.use(express.json());
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/todo';
 
+if (!process.env.MONGODB_URI) {
+  console.warn('⚠️  MONGODB_URI 환경변수가 설정되지 않았습니다. 기본값을 사용합니다.');
+} else {
+  console.log('✅ MONGODB_URI 환경변수 확인됨');
+}
+
 app.get('/', (_req, res) => {
   res.json({ message: 'Todo Backend API is running' });
 });
@@ -34,7 +40,8 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   try {
     await mongoose.connect(MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
     });
     console.log('연결 성공');
     console.log('MongoDB URI:', MONGODB_URI.replace(/\/\/[^:]+:[^@]+@/, '//***:***@')); // 비밀번호 마스킹
