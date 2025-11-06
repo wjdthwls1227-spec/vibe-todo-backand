@@ -29,17 +29,19 @@ app.get('/health', (_req, res) => {
 
 app.use('/todos', todosRouter);
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 async function start() {
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI, {
+      serverSelectionTimeoutMS: 5000,
+    });
     console.log('연결 성공');
     console.log('MongoDB URI:', MONGODB_URI.replace(/\/\/[^:]+:[^@]+@/, '//***:***@')); // 비밀번호 마스킹
     console.log('연결된 데이터베이스:', mongoose.connection.db.databaseName);
 
-    app.listen(PORT, () => {
-      console.log(`Server ready on http://localhost:${PORT}`);
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server ready on http://0.0.0.0:${PORT}`);
     });
   } catch (error) {
     console.error('MongoDB 연결 실패', error);
